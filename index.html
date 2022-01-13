@@ -11,12 +11,12 @@
       function reducer(oldState, action) {
         if (oldState === undefined) {
           return {
-            mode: "CREATE",
+            mode: "UPDATE",
             topics: [
               { id: 1, title: "html", body: "html is ..." },
               { id: 2, title: "css", body: "css is ..." },
             ],
-            id: null,
+            id: 1,
             nextId: 3,
           };
         }
@@ -36,6 +36,17 @@
           newState.topics = newTopics;
         } else if (action.type === "INCREASE_NEXT_ID") {
           newState.nextId++;
+        } else if (action.type === "UPDATE") {
+          const newTopics = [...newState.topics];
+          for (let i = 0; i < newTopics.length; i++) {
+            let t = newTopics[i];
+
+            if (t.id === newState.id) {
+              t.title = action.title;
+              t.body = action.body;
+            }
+          }
+          newState.topics = newTopics;
         }
         return newState;
       }
@@ -98,15 +109,32 @@
                 const title = event.target.title.value;
                 const body = event.target.body.value;
                 store.dispatch({type:'CREATE', title:title, body:body});
-                store.dispatch({type:'CHANGE_ID', id:state.nextId});
-                store.dispatch({type:'INCREASE_NEXT_ID'});
                 store.dispatch({type:'CHANGE_MODE', mode:'READ'});
             ">
                 <p><input type="text" name="title" placeholder="create"></p>
                 <p><textarea name="body" placeholder="body"></textarea></p>
                 <p><input type="submit" value="create"></p>
             </form>
-                    `;
+          `;
+        } else if (state.mode === "UPDATE") {
+          const topic = state.topics.filter((t) => t.id === state.id)[0];
+          console.log(topic);
+          articleTag = `
+            <form onsubmit="
+                const state = store.getState();
+                event.preventDefault();
+                const title = event.target.title.value;
+                const body = event.target.body.value;
+                store.dispatch({type:'UPDATE', title:title, body:body});
+                store.dispatch({type:'CHANGE_ID', id:state.nextId});
+                store.dispatch({type:'INCREASE_NEXT_ID'});
+                store.dispatch({type:'CHANGE_MODE', mode:'READ'});
+            ">
+                <p><input type="text" name="title" placeholder="update" value=${topic.title}></p>
+                <p><textarea name="body" placeholder="body" >${topic.body}</textarea></p>
+                <p><input type="submit" value="update"></p>
+            </form>
+          `;
         }
         document.querySelector("article").innerHTML = articleTag;
       }
