@@ -9,6 +9,11 @@ function reducer(oldState, action) {
       number: 0,
     };
   }
+  const newState = { ...oldState };
+  if (action.type === "INCREASE") {
+    newState.number += 1;
+  }
+  return newState;
 }
 const store = createStore(
   reducer,
@@ -92,10 +97,17 @@ function Right3() {
   );
 }
 function Right4() {
+  const dispatch = useDispatch();
   return (
     <div>
       <h5>Right4</h5>
-      <input type="button" value="+"></input>
+      <input
+        type="button"
+        value="+"
+        onClick={() => {
+          dispatch({ type: "INCREASE" });
+        }}
+      ></input>
     </div>
   );
 }
