@@ -1,0 +1,109 @@
+﻿<html>
+  <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/redux/5.0.0-alpha.0/redux.min.js"></script>
+  </head>
+  <body>
+    <header></header>
+    <nav></nav>
+    <article></article>
+    <div id="control"></div>
+    <script>
+      function reducer(oldState, action) {
+        if (oldState === undefined) {
+          return {
+            mode: "CREATE",
+            topics: [
+              { id: 1, title: "html", body: "html is ..." },
+              { id: 2, title: "css", body: "css is ..." },
+            ],
+            id: null,
+          };
+        }
+
+        const newState = { ...oldState };
+        if (action.type === "CHANGE_MODE") {
+          newState.mode = action.mode;
+        } else if (action.type === "CHANGE_ID") {
+          newState.id = action.id;
+        }
+        return newState;
+      }
+
+      const store = Redux.createStore(
+        reducer,
+        window.__REDUX_DEVTOOLS_EXTENSION__ &&
+          window.__REDUX_DEVTOOLS_EXTENSION__(),
+      );
+
+      function Header() {
+        document.querySelector("header").innerHTML = `
+                    <h1><a href="/" onclick="
+                        event.preventDefault()
+                        store.dispatch({type: 'CHANGE_MODE', mode: 'WELCOME'})
+                      " >WEB</a></h1>
+                `;
+      }
+      Header();
+      function Nav() {
+        const state = store.getState();
+        let liTag = "";
+        for (let i = 0; i < state.topics.length; i++) {
+          let t = state.topics[i];
+          liTag =
+            liTag +
+            `<li><a href="/read/${t.id}" onclick="
+                        event.preventDefault()
+                        store.dispatch({type: 'CHANGE_ID', id: ${t.id}})
+                        store.dispatch({type: 'CHANGE_MODE', mode: 'READ'})
+                      " >${t.title}</a></li>`;
+        }
+        document.querySelector("nav").innerHTML = `
+                <ul>
+                    ${liTag}
+                </ul>
+                `;
+      }
+      Nav();
+      function Article() {
+        const state = store.getState();
+        let articleTag = "";
+        if (state.mode === "WELCOME") {
+          articleTag = `
+                    <h2>Welcome</h2>
+                    Hello, React
+                `;
+        } else if (state.mode === "READ") {
+          const t = state.topics.filter((t) => t.id === state.id)[0];
+          articleTag = `
+                      <h2>${t.title}</h2>
+                      ${t.body}
+                  `;
+        } else if (state.mode === "CREATE") {
+          articleTag = `
+            <form>
+              <p><input type="text" name="title" placeholder="create" /></p>  
+              <p><textarea nome="body" placeholder="body"></textarea></p>
+              <p><input type="submit" value="create" /></p>
+            </form>
+          `;
+        }
+        document.querySelector("article").innerHTML = articleTag;
+      }
+      Article();
+      store.subscribe(Article);
+
+      function Control() {
+        document.querySelector("#control").innerHTML = `
+          <ul>
+            <li><a href="/create" onclick="
+              event.preventDefault()
+              store.dispatch({type: 'CHANGE_MODE', mode: 'CREATE'})
+
+              ">create</a></li>  
+          </ul>
+        `;
+      }
+      Control();
+    </script>
+  </body>
+</html>
