@@ -47,6 +47,15 @@
             }
           }
           newState.topics = newTopics;
+        } else if (action.type === "DELETE") {
+          let newTopics = [];
+          for (let i = 0; i < newState.topics.length; i++) {
+            let t = newState.topics[i];
+            if (t.id !== newState.id) {
+              newTopics.push(t);
+            }
+          }
+          newState.topics = newTopics;
         }
         return newState;
       }
@@ -147,11 +156,16 @@
         let contextUI = "";
         if (state.mode === "READ") {
           contextUI = `
-          <li><a href="/update${state.id}" onclick="
+            <li><a href="/update${state.id}" onclick="
               event.preventDefault()
               store.dispatch({type: 'CHANGE_MODE', mode: 'UPDATE'})
-
-              ">update</a></li> 
+              ">update</a></li>
+            <li>
+              <input type ="button" value="delete" onclick="
+                store.dispatch({type: 'CHANGE_MODE', mode: 'WELCOME'})
+                store.dispatch({type: 'DELETE'})
+              ">  
+            </li>
           `;
         }
 
