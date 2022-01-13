@@ -110,6 +110,9 @@
                 const body = event.target.body.value;
                 store.dispatch({type:'CREATE', title:title, body:body});
                 store.dispatch({type:'CHANGE_MODE', mode:'READ'});
+                store.dispatch({type:'CHANGE_ID', id:state.nextId});
+                store.dispatch({type:'INCREASE_NEXT_ID'});
+
             ">
                 <p><input type="text" name="title" placeholder="create"></p>
                 <p><textarea name="body" placeholder="body"></textarea></p>
@@ -126,8 +129,6 @@
                 const title = event.target.title.value;
                 const body = event.target.body.value;
                 store.dispatch({type:'UPDATE', title:title, body:body});
-                store.dispatch({type:'CHANGE_ID', id:state.nextId});
-                store.dispatch({type:'INCREASE_NEXT_ID'});
                 store.dispatch({type:'CHANGE_MODE', mode:'READ'});
             ">
                 <p><input type="text" name="title" placeholder="update" value=${topic.title}></p>
