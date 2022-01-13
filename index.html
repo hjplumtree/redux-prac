@@ -17,6 +17,7 @@
               { id: 2, title: "css", body: "css is ..." },
             ],
             id: null,
+            nextId: 3,
           };
         }
 
@@ -25,6 +26,16 @@
           newState.mode = action.mode;
         } else if (action.type === "CHANGE_ID") {
           newState.id = action.id;
+        } else if (action.type === "CREATE") {
+          const newTopics = [...newState.topics];
+          newTopics.push({
+            id: newState.nextId,
+            title: action.title,
+            body: action.body,
+          });
+          newState.topics = newTopics;
+        } else if (action.type === "INCREASE_NEXT_ID") {
+          newState.nextId++;
         }
         return newState;
       }
@@ -64,6 +75,7 @@
                 `;
       }
       Nav();
+      store.subscribe(Nav);
       function Article() {
         const state = store.getState();
         let articleTag = "";
@@ -80,12 +92,21 @@
                   `;
         } else if (state.mode === "CREATE") {
           articleTag = `
-            <form>
-              <p><input type="text" name="title" placeholder="create" /></p>  
-              <p><textarea nome="body" placeholder="body"></textarea></p>
-              <p><input type="submit" value="create" /></p>
+            <form onsubmit="
+                const state = store.getState();
+                event.preventDefault();
+                const title = event.target.title.value;
+                const body = event.target.body.value;
+                store.dispatch({type:'CREATE', title:title, body:body});
+                store.dispatch({type:'CHANGE_ID', id:state.nextId});
+                store.dispatch({type:'INCREASE_NEXT_ID'});
+                store.dispatch({type:'CHANGE_MODE', mode:'READ'});
+            ">
+                <p><input type="text" name="title" placeholder="create"></p>
+                <p><textarea name="body" placeholder="body"></textarea></p>
+                <p><input type="submit" value="create"></p>
             </form>
-          `;
+                    `;
         }
         document.querySelector("article").innerHTML = articleTag;
       }
@@ -93,17 +114,31 @@
       store.subscribe(Article);
 
       function Control() {
+        const state = store.getState();
+        let contextUI = "";
+        if (state.mode === "READ") {
+          contextUI = `
+          <li><a href="/update${state.id}" onclick="
+              event.preventDefault()
+              store.dispatch({type: 'CHANGE_MODE', mode: 'UPDATE'})
+
+              ">update</a></li> 
+          `;
+        }
+
         document.querySelector("#control").innerHTML = `
           <ul>
             <li><a href="/create" onclick="
               event.preventDefault()
               store.dispatch({type: 'CHANGE_MODE', mode: 'CREATE'})
 
-              ">create</a></li>  
+              ">create</a></li>
+              ${contextUI}  
           </ul>
         `;
       }
       Control();
+      store.subscribe(Control);
     </script>
   </body>
 </html>
