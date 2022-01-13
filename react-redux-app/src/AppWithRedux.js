@@ -1,6 +1,7 @@
 ﻿import { useState } from "react";
 import "./App.css";
 import { createStore } from "redux";
+import { Provider, useSelector, useDispatch } from "react-redux";
 
 function reducer(oldState, action) {
   if (oldState === undefined) {
@@ -15,102 +16,86 @@ const store = createStore(
 );
 
 function App() {
-  const [value, setValue] = useState(1);
   return (
-    <div>
-      <h1>Root</h1>
-      {value}
-      <div id="container">
-        <Left1 number={value}></Left1>
-        <Right1
-          onIncrease={() => {
-            setValue(value + 1);
-          }}
-        ></Right1>
+    <Provider store={store}>
+      <div>
+        <h1>Root</h1>
+        <div id="container">
+          <Left1></Left1>
+          <Right1></Right1>
+        </div>
       </div>
-    </div>
+    </Provider>
   );
 }
 
-function Left1(props) {
+function Left1() {
   return (
     <div>
-      <h2>Left1 : {props.number}</h2>
-      <Left2 number={props.number}></Left2>
+      <h2>Left1</h2>
+      <Left2></Left2>
     </div>
   );
 }
-function Left2(props) {
+function Left2() {
   return (
     <div>
-      <h3>Left2 : {props.number}</h3>
-      <Left3 number={props.number}></Left3>
+      <h3>Left2</h3>
+      <Left3></Left3>
     </div>
   );
 }
-function Left3(props) {
+function Left3() {
   return (
     <div>
-      <h4>Left3 : {props.number}</h4>
-      <Left4 number={props.number}></Left4>
+      <h4>Left3</h4>
+      <Left4></Left4>
     </div>
   );
 }
 function Left4(props) {
+  function selectorHandler(state) {
+    return state.number;
+  }
+  const number = useSelector(selectorHandler);
+  console.log(number);
   return (
     <div>
-      <h5>Left4 : {props.number}</h5>
+      <h5>Left4</h5>
+      {number}
     </div>
   );
 }
 
-function Right1(props) {
+function Right1() {
   return (
     <div>
       <h2>Right1</h2>
-      <Right2
-        onIncrease={() => {
-          props.onIncrease();
-        }}
-      ></Right2>
+      <Right2></Right2>
     </div>
   );
 }
-function Right2(props) {
+function Right2() {
   return (
     <div>
       <h3>Right2</h3>
-      <Right3
-        onIncrease={() => {
-          props.onIncrease();
-        }}
-      ></Right3>
+      <Right3></Right3>
     </div>
   );
 }
-function Right3(props) {
+function Right3() {
   return (
     <div>
       <h4>Right3</h4>
-      <Right4
-        onIncrease={() => {
-          props.onIncrease();
-        }}
-      ></Right4>
+      <Right4></Right4>
     </div>
   );
 }
-function Right4(props) {
+function Right4() {
   return (
     <div>
       <h5>Right4</h5>
-      <input
-        type="button"
-        value="+"
-        onClick={() => {
-          props.onIncrease();
-        }}
-      ></input>
+      <input type="button" value="+"></input>
     </div>
   );
 }
