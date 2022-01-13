@@ -1,5 +1,18 @@
 ﻿import { useState } from "react";
 import "./App.css";
+import { createStore } from "redux";
+
+function reducer(oldState, action) {
+  if (oldState === undefined) {
+    return {
+      number: 0,
+    };
+  }
+}
+const store = createStore(
+  reducer,
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
+);
 
 function App() {
   const [value, setValue] = useState(1);
